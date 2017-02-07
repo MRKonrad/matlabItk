@@ -24,16 +24,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     
     itkBSplineRegMulti(fixedImage, movingImage, registeredImage,  displacementField);
     
-//    typedef itk::AddImageFilter <ImageType, ImageType, ImageType > AddImageFilterType;
-//    AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
-//    addFilter->SetInput1(fixedImage);
-//    addFilter->SetInput2(movingImage);
-//    addFilter->Update();
-//    registeredImage = addFilter->GetOutput();
-//    registeredImage->Update();
-    
-    std::cout << "ggg" << std::endl;
-    
     // output
     mwSize matlabSize[3];
     matlabSize[0] = itkSize[0];
@@ -44,5 +34,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     fillOutputWithItkImage2d(plhs[0], registeredImage);
     
     plhs[1] = mxCreateNumericArray(3, matlabSize, mxDOUBLE_CLASS, mxREAL);
-    
+    fillOutputWithItkDispField2d(plhs[1], displacementField);
 }

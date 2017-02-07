@@ -65,3 +65,26 @@ void fillOutputWithItkImage2d(mxArray *ptr, ImageType::Pointer image){
         ++dataOut;
     }
 }
+
+void fillOutputWithItkDispField2d(mxArray *ptr, DisplacementFieldImageType::Pointer dispField){
+    DisplacementFieldImageType::SizeType size = dispField->GetLargestPossibleRegion().GetSize();
+    DisplacementFieldImageType::RegionType region;
+    region.SetSize(size);
+    DisplacementFieldImageType::IndexType start = {{ 0, 0}};
+    region.SetIndex(start);
+    
+    IteratorDispFieldType itOut (dispField, region);
+    itOut.GoToBegin();
+    double *dataOut = mxGetPr(ptr);
+    while (!itOut.IsAtEnd()){
+        *dataOut = itOut.Get()[0];
+        ++itOut;
+        ++dataOut;
+    }
+    itOut.GoToBegin();
+    while (!itOut.IsAtEnd()){
+        *dataOut = itOut.Get()[1];
+        ++itOut;
+        ++dataOut;
+    }
+}

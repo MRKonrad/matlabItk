@@ -47,9 +47,8 @@ int filterToImage(ImageType::Pointer image, itkImageToImageFilterType::Pointer f
     return 0;
 }
 
-int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField){
+int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer &displacementField){
 
-    
     const unsigned int SpaceDimension = ImageDimension;
     const unsigned int SplineOrder = 3;
     typedef double CoordinateRepType;
@@ -57,7 +56,7 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
     typedef itk::BSplineTransform<
     CoordinateRepType,
     SpaceDimension,
-    SplineOrder >     TransformType;
+    SplineOrder > TransformType;
     
     typedef itk::LBFGSOptimizerv4 OptimizerType;
     
@@ -186,11 +185,11 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
     
     // Set Optimizer
     optimizer->SetScalesEstimator( scalesEstimator );
-    optimizer->SetGradientConvergenceTolerance( 0.1 );
+    optimizer->SetGradientConvergenceTolerance( 10 );
     optimizer->SetLineSearchAccuracy( 0.9 );
-    optimizer->SetDefaultStepLength( 1.5 );
+    optimizer->SetDefaultStepLength( 5 );
     optimizer->TraceOn();
-    optimizer->SetMaximumNumberOfFunctionEvaluations( 100 );
+    optimizer->SetMaximumNumberOfFunctionEvaluations( 10 );
     
     std::cout << "Starting Registration "<< std::endl;
     
@@ -224,7 +223,7 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
     resample->SetOutputSpacing( fixedImage->GetSpacing() );
     resample->SetOutputDirection( fixedImage->GetDirection() );
     resample->SetDefaultPixelValue( 100 );
-    
+    resample->Update();
     filterToImage(registeredImage, (itkImageToImageFilterType::Pointer) resample);
     //registeredImage -> Update();
     
@@ -253,7 +252,6 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
     }
     
     displacementField = dispfieldGenerator->GetOutput();
-    displacementField->Update();
     
     return EXIT_SUCCESS;
 
