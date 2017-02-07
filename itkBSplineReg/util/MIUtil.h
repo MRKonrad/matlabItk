@@ -21,6 +21,7 @@ typedef itk::ImageRegionIterator< DisplacementFieldImageType > IteratorDispField
 
 
 ImageType::Pointer emptyImage(int nRows, int nCols);
+DisplacementFieldImageType::Pointer emptyDisplacementFieldImage(int nRows, int nCols);
 ImageType::Pointer getItkImageFromMatlabPtr2d(const mxArray *ptr);
 void fillOutputWithItkImage2d(mxArray *ptr, ImageType::Pointer image);
 void fillOutputWithItkDispField2d(mxArray *ptr, DisplacementFieldImageType::Pointer image);

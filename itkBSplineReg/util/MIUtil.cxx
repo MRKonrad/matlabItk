@@ -45,7 +45,31 @@ ImageType::Pointer emptyImage(int nRows, int nCols){
     double origin[] = { 0, 0};
     image->SetSpacing(spacing);
     image->SetOrigin(origin);
-    image->FillBuffer(-3);
+    image->FillBuffer(0);
+    return image;
+}
+
+DisplacementFieldImageType::Pointer emptyDisplacementFieldImage(int nRows, int nCols){
+    DisplacementFieldImageType::Pointer image = DisplacementFieldImageType::New();
+    DisplacementFieldImageType::SizeType size;
+    size[0] = nRows;
+    size[1] = nCols;
+    DisplacementFieldImageType::IndexType start = {{ 0, 0}};
+    
+    DisplacementFieldImageType::RegionType region;
+    region.SetSize(size);
+    region.SetIndex(start);
+    image->SetRegions(region);
+    image->Allocate();
+    
+    double spacing[] = { 1, 1};
+    double origin[] = { 0, 0};
+    image->SetSpacing(spacing);
+    image->SetOrigin(origin);
+    VectorPixelType vector;
+    vector[0] = 0;
+    vector[1] = 0;
+    image->FillBuffer(vector);
     return image;
 }
 

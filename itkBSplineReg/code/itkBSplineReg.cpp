@@ -12,6 +12,27 @@
 #include "itkImageToImageFilter.h"
 #include "itKImageToImageFilter.h"
 
+template< typename AnImageType, typename AFilterType >
+int filterToImage(AnImageType* image, AFilterType* filter){
+    typedef itk::ImageRegionConstIterator< AnImageType > ConstIteratorType;
+    typedef itk::ImageRegionIterator< AnImageType > IteratorType;
+    ConstIteratorType inputIt( filter->GetOutput(), filter->GetOutput()->GetLargestPossibleRegion() );
+    IteratorType outputIt( image, image->GetLargestPossibleRegion() );
+    
+    inputIt.GoToBegin();
+    outputIt.GoToBegin();
+    
+    while( !inputIt.IsAtEnd() ){
+        outputIt.Set( inputIt.Get() );
+        //outputIt.Value() = inputIt.Value();
+        ++inputIt;
+        ++outputIt;
+    }
+    image->Update();
+    
+    return 0;
+}
+
 int itkBSplineReg(const ImageType::Pointer fixedImage, const ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField){
 
     typedef itk::AddImageFilter <ImageType, ImageType > AddImageFilterType;
@@ -21,33 +42,12 @@ int itkBSplineReg(const ImageType::Pointer fixedImage, const ImageType::Pointer 
 
     addFilter->Update();
 
-    std::cout << "eee" << std::endl;
-    filterToImage(registeredImage, (itkImageToImageFilterType::Pointer) addFilter);
+    filterToImage<ImageType, AddImageFilterType>(registeredImage, addFilter);
     
     return 0;
 }
 
-int filterToImage(ImageType::Pointer image, itkImageToImageFilterType::Pointer filter ){
-    
-    typedef itk::ImageRegionConstIterator< ImageType > ConstIteratorType;
-    typedef itk::ImageRegionIterator< ImageType > IteratorType;
-    ConstIteratorType inputIt( filter->GetOutput(), filter->GetOutput()->GetLargestPossibleRegion() );
-    IteratorType outputIt( image, image->GetLargestPossibleRegion() );
-    
-    inputIt.GoToBegin();
-    outputIt.GoToBegin();
-    
-    while( !inputIt.IsAtEnd() ){
-        outputIt.Set( inputIt.Get() );
-        ++inputIt;
-        ++outputIt;
-    }
-    image->Update();
-    
-    return 0;
-}
-
-int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer &displacementField){
+int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField){
 
     const unsigned int SpaceDimension = ImageDimension;
     const unsigned int SplineOrder = 3;
@@ -185,11 +185,11 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
     
     // Set Optimizer
     optimizer->SetScalesEstimator( scalesEstimator );
-    optimizer->SetGradientConvergenceTolerance( 10 );
+    optimizer->SetGradientConvergenceTolerance( 0.1 );
     optimizer->SetLineSearchAccuracy( 0.9 );
-    optimizer->SetDefaultStepLength( 5 );
+    optimizer->SetDefaultStepLength( 1.5 );
     optimizer->TraceOn();
-    optimizer->SetMaximumNumberOfFunctionEvaluations( 10 );
+    optimizer->SetMaximumNumberOfFunctionEvaluations( 100 );
     
     std::cout << "Starting Registration "<< std::endl;
     
@@ -224,8 +224,8 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
     resample->SetOutputDirection( fixedImage->GetDirection() );
     resample->SetDefaultPixelValue( 100 );
     resample->Update();
-    filterToImage(registeredImage, (itkImageToImageFilterType::Pointer) resample);
-    //registeredImage -> Update();
+    filterToImage<ImageType,ResampleFilterType>(registeredImage, resample);
+    
     
     // Generate the explicit deformation field resulting from
     // the registration.
@@ -251,7 +251,7 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
         return EXIT_FAILURE;
     }
     
-    displacementField = dispfieldGenerator->GetOutput();
+    filterToImage<DisplacementFieldImageType,DisplacementFieldGeneratorType>(displacementField, dispfieldGenerator);
     
     return EXIT_SUCCESS;
 

@@ -19,9 +19,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
     ImageType::SizeType itkSize = fixedImage->GetLargestPossibleRegion().GetSize();
     
     ImageType::Pointer registeredImage = emptyImage(itkSize[0], itkSize[1]);
-    DisplacementFieldImageType::Pointer displacementField = DisplacementFieldImageType::New();
+    DisplacementFieldImageType::Pointer displacementField = emptyDisplacementFieldImage(itkSize[0], itkSize[1]);
     // processing
     
+//    itkBSplineReg(fixedImage, movingImage, registeredImage,  displacementField);
     itkBSplineRegMulti(fixedImage, movingImage, registeredImage,  displacementField);
     
     // output
