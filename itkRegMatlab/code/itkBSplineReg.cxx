@@ -8,46 +8,7 @@
 
 #include "itkBSplineReg.h"
 
-#include "itkAddImageFilter.h"
-#include "itkImageToImageFilter.h"
-#include "itKImageToImageFilter.h"
-
-template< typename AnImageType, typename AFilterType >
-int filterToImage(AnImageType* image, AFilterType* filter){
-    typedef itk::ImageRegionConstIterator< AnImageType > ConstIteratorType;
-    typedef itk::ImageRegionIterator< AnImageType > IteratorType;
-    ConstIteratorType inputIt( filter->GetOutput(), filter->GetOutput()->GetLargestPossibleRegion() );
-    IteratorType outputIt( image, image->GetLargestPossibleRegion() );
-    
-    inputIt.GoToBegin();
-    outputIt.GoToBegin();
-    
-    while( !inputIt.IsAtEnd() ){
-        outputIt.Set( inputIt.Get() );
-        //outputIt.Value() = inputIt.Value();
-        ++inputIt;
-        ++outputIt;
-    }
-    image->Update();
-    
-    return 0;
-}
-
-int itkBSplineReg(const ImageType::Pointer fixedImage, const ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField){
-
-    typedef itk::AddImageFilter <ImageType, ImageType > AddImageFilterType;
-    AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
-    addFilter->SetInput1(fixedImage);
-    addFilter->SetInput2(movingImage);
-
-    addFilter->Update();
-
-    filterToImage<ImageType, AddImageFilterType>(registeredImage, addFilter);
-    
-    return 0;
-}
-
-int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField){
+int itkBSplineReg(ImageType::Pointer fixedImage, ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField){
 
     const unsigned int SpaceDimension = ImageDimension;
     const unsigned int SplineOrder = 3;
@@ -224,6 +185,7 @@ int itkBSplineRegMulti(ImageType::Pointer fixedImage, ImageType::Pointer movingI
     resample->SetOutputDirection( fixedImage->GetDirection() );
     resample->SetDefaultPixelValue( 100 );
     resample->Update();
+    
     filterToImage<ImageType,ResampleFilterType>(registeredImage, resample);
     
     

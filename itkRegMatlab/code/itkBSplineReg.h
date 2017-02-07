@@ -27,24 +27,8 @@
 #include "itkBSplineTransformInitializer.h"
 #include "itkTransformToDisplacementFieldFilter.h"
 
-#include "../util/MIUtil.h"
-
-//const   unsigned int ImageDimension = 2;
-
-//typedef double PixelType;
-//typedef itk::Vector< double, ImageDimension > VectorPixelType;
-//
-//typedef itk::Image< PixelType, ImageDimension >       ImageType;
-//typedef itk::Image< VectorPixelType, ImageDimension > DisplacementFieldImageType;
-
-//typedef itk::ImageToImageFilter <ImageType, ImageType> itkImageToImageFilterType;
-
-//int filterToImage(ImageType::Pointer image, itkImageToImageFilterType::Pointer filter );
-
-template< typename AnImageType, typename AFilterType >
-int filterToImage(AnImageType* image, AFilterType* filter);
+#include "MIUtil.h"
 
 int itkBSplineReg(const ImageType::Pointer fixedImage, const ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField);
-int itkBSplineRegMulti(const ImageType::Pointer fixedImage, const ImageType::Pointer movingImage, ImageType::Pointer registeredImage, DisplacementFieldImageType::Pointer displacementField);
 
 #endif /* itkBSplineReg_h */

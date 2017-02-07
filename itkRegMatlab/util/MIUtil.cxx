@@ -34,13 +34,13 @@ ImageType::Pointer emptyImage(int nRows, int nCols){
     size[0] = nRows;
     size[1] = nCols;
     ImageType::IndexType start = {{ 0, 0}};
-    
+
     ImageType::RegionType region;
     region.SetSize(size);
     region.SetIndex(start);
     image->SetRegions(region);
     image->Allocate();
-    
+
     double spacing[] = { 1, 1};
     double origin[] = { 0, 0};
     image->SetSpacing(spacing);
@@ -55,13 +55,13 @@ DisplacementFieldImageType::Pointer emptyDisplacementFieldImage(int nRows, int n
     size[0] = nRows;
     size[1] = nCols;
     DisplacementFieldImageType::IndexType start = {{ 0, 0}};
-    
+
     DisplacementFieldImageType::RegionType region;
     region.SetSize(size);
     region.SetIndex(start);
     image->SetRegions(region);
     image->Allocate();
-    
+
     double spacing[] = { 1, 1};
     double origin[] = { 0, 0};
     image->SetSpacing(spacing);
@@ -96,7 +96,7 @@ void fillOutputWithItkDispField2d(mxArray *ptr, DisplacementFieldImageType::Poin
     region.SetSize(size);
     DisplacementFieldImageType::IndexType start = {{ 0, 0}};
     region.SetIndex(start);
-    
+
     IteratorDispFieldType itOut (dispField, region);
     itOut.GoToBegin();
     double *dataOut = mxGetPr(ptr);
